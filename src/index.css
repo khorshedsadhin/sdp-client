@@ -84,3 +84,19 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
 .register-role {
   @apply border-primary bg-primary/10 text-primary font-bold;
 }
+
+/* Hide native browser password-reveal/clear icons so our custom eye toggle
+   (PasswordField) isn't covered while the field is focused. */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
+}
+
+input[type="password"]::-webkit-credentials-auto-fill-button,
+input[type="password"]::-webkit-strong-password-auto-fill-button {
+  visibility: hidden;
+  display: none !important;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+}

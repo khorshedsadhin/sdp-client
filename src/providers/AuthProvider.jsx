@@ -1,60 +1,63 @@
 import React, { useEffect, useState } from 'react';
 import { AuthContext } from './AuthContext';
-import { buildDemoUser, getStoredUser, setStoredUser } from '../mocks/demoAuth';
+import {
+  EmailAuthProvider,
+  createUserWithEmailAndPassword,
+  getAuth,
+  onAuthStateChanged,
+  reauthenticateWithCredential,
+  signInWithEmailAndPassword,
+  signOut,
+  updatePassword,
+  updateProfile,
+} from 'firebase/auth'
+import { app } from '../firebase/firebase.config';
 
-// Frontend-only demo auth (no Firebase). Any email/password is accepted —
-// the email decides the role (see roleForEmail in demoData):
-//   admin@demo.com -> admin, tutor@demo.com -> tutor, anything else -> student.
+const auth = getAuth(app);
+
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const createUser = async (email) => {
-    setLoading(true);
-    const demoUser = setStoredUser(buildDemoUser({ email }));
-    setUser(demoUser);
-    setLoading(false);
-    return { user: demoUser };
-  };
+  const createUser = (email, password) => {
+    setLoading(true)
+    return createUserWithEmailAndPassword(auth, email, password)
+  }
 
-  const signIn = async (email) => {
-    setLoading(true);
-    const demoUser = setStoredUser(buildDemoUser({ email }));
-    setUser(demoUser);
-    setLoading(false);
-    return { user: demoUser };
-  };
-
-  const signInWithGoogle = async () => {
-    setLoading(true);
-    const demoUser = setStoredUser(
-      buildDemoUser({ email: 'demo.user@demo.com', displayName: 'Demo Google User' })
-    );
-    setUser(demoUser);
-    setLoading(false);
-    return { user: demoUser };
-  };
+  const signIn = (email, password) => {
+    setLoading(true)
+    return signInWithEmailAndPassword(auth, email, password)
+  }
 
   const logOut = async () => {
-    setLoading(true);
-    setStoredUser(null);
-    setUser(null);
-    setLoading(false);
-  };
+    setLoading(true)
+    return signOut(auth)
+  }
 
-  const updateUserProfile = async (name, photo) => {
-    setUser((prev) => {
-      const next = { ...(prev || {}), displayName: name, photoURL: photo };
-      setStoredUser(next);
-      return next;
-    });
-  };
+  const updateUserProfile = (name, photo) => {
+    return updateProfile(auth.currentUser, {
+      displayName: name,
+      photoURL: photo,
+    })
+  }
 
-  // Restore any previously "logged-in" demo user on first load.
+  // Re-authenticates with the current password before Firebase allows a password change.
+  const changePassword = async (currentPassword, newPassword) => {
+    const credential = EmailAuthProvider.credential(auth.currentUser.email, currentPassword)
+    await reauthenticateWithCredential(auth.currentUser, credential)
+    return updatePassword(auth.currentUser, newPassword)
+  }
+
+  // onAuthStateChange
   useEffect(() => {
-    setUser(getStoredUser());
-    setLoading(false);
-  }, []);
+    const unsubscribe = onAuthStateChanged(auth, async currentUser => {
+      setUser(currentUser)
+      setLoading(false)
+    })
+    return () => {
+      return unsubscribe()
+    }
+  }, [])
 
   const authInfo = {
     user,
@@ -63,9 +66,9 @@ const AuthProvider = ({ children }) => {
     setLoading,
     createUser,
     signIn,
-    signInWithGoogle,
     logOut,
     updateUserProfile,
+    changePassword,
   }
 
   return (

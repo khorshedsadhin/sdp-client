@@ -1,8 +1,7 @@
 import React, { useState } from "react";
-import { Link, Navigate, useLocation, useNavigate } from "react-router";
+import { Link, Navigate, useNavigate } from "react-router";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { motion } from "framer-motion";
-import { FaGoogle } from "react-icons/fa";
 import Button from "../../components/Shared/Button/Button";
 import { useForm } from "react-hook-form";
 import useAuth from "../../hooks/useAuth";
@@ -11,13 +10,11 @@ import { toast } from 'react-hot-toast'
 import LoadingSpinner from "../../components/Shared/LoadingSpinner";
 
 const Register = () => {
-  const { createUser, updateUserProfile, signInWithGoogle, loading, setLoading, user } = useAuth();
+  const { createUser, updateUserProfile, loading, setLoading, user } = useAuth();
 	const [showPassword, setShowPassword] = useState(false);
 	const [role, setRole] = useState("student");
 
   const navigate = useNavigate();
-  const location = useLocation();
-  const from = location.state || '/';
 
 	const {
 		register,
@@ -26,7 +23,7 @@ const Register = () => {
 	} = useForm();
 
   if(loading) return <LoadingSpinner />
-  if(user) return <Navigate to={from} replace={true} />
+  if(user) return <Navigate to="/dashboard" replace={true} />
 
 	const onSubmit = async (data) => {
     const { name, image, email, password } = data;
@@ -45,26 +42,11 @@ const Register = () => {
         imageURL
       )
 
-      navigate(from, { replace: true })
+      navigate('/dashboard', { replace: true })
       toast.success('Signup Successful')
     }
 
     catch(err) {
-      toast.error(err?.message);
-      setLoading(false);
-    }
-	};
-
-	const handleGoogleRegister = async() => {
-		try {
-      const defaultRole = "student";
-
-      const { user } = await signInWithGoogle()
-      await saveOrUpdateUser({ name: user?.displayName, email: user?.email, image: user?.photoURL, role: defaultRole });
-
-      navigate(from, { replace: true })
-      toast.success('Signup Successful')
-    } catch (err) {
       toast.error(err?.message);
       setLoading(false);
     }
@@ -244,17 +226,6 @@ const Register = () => {
 							<Button label="Register" type="submit" fullWidth />
 						</div>
 					</form>
-
-					{/* Social Divider */}
-					<div className="divider text-xs text-base-content/50">OR</div>
-
-					<Button
-						onClick={handleGoogleRegister}
-						label="Continue with Google"
-						variant="blackOutline"
-						icon={FaGoogle}
-						fullWidth
-					/>
 
 					{/* Footer Link */}
 					<p className="mt-6 text-center text-sm text-base-content/70">

@@ -4,6 +4,7 @@ import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router';
 import { useMutation } from '@tanstack/react-query';
 import useAxiosSecure from '../../../hooks/useAxiosSecure';
+import useCredits from '../../../hooks/useCredits';
 import Button from '../../../components/Shared/Button/Button';
 import FadeIn from '../../../components/Shared/FadeIn';
 
@@ -11,6 +12,7 @@ const PostTuition = () => {
     const { register, handleSubmit, reset, formState: { errors } } = useForm();
     const axiosSecure = useAxiosSecure();
     const navigate = useNavigate();
+    const { availableCredits, isLoading: isCreditsLoading, refetch: refetchCredits } = useCredits();
 
     const { mutateAsync, isPending } = useMutation({
         mutationFn: async (tuitionData) => {
@@ -20,9 +22,15 @@ const PostTuition = () => {
         onSuccess: () => {
             toast.success('Tuition posted successfully!');
             reset();
+            refetchCredits();
             navigate('/dashboard/student/my-tuitions');
         },
         onError: (err) => {
+            if (err.response?.data?.reason === 'posting_credit') {
+                toast.error(err.response.data.message);
+                navigate('/dashboard/student/posting-credits');
+                return;
+            }
             toast.error('Failed to post tuition');
         }
     });
@@ -35,6 +43,8 @@ const PostTuition = () => {
         await mutateAsync(tuitionData);
     };
 
+    const hasCredits = availableCredits > 0;
+
     return (
         <div className="flex flex-col items-center justify-center min-h-[80vh]">
             <FadeIn>
@@ -42,6 +52,14 @@ const PostTuition = () => {
                 <h2 className="text-2xl font-bold text-primary">Post a New Tuition</h2>
                 <p className="text-base-content/70">Fill in the details to find the perfect tutor.</p>
             </div>
+
+            {!isCreditsLoading && (
+                <div className={`mb-6 rounded-lg px-4 py-3 text-sm font-medium text-center ${hasCredits ? 'bg-primary/10 text-primary' : 'bg-red-400/10 text-red-400'}`}>
+                    {hasCredits
+                        ? `You have ${availableCredits} posting credit${availableCredits > 1 ? 's' : ''} available.`
+                        : 'You need to purchase a Posting Credit before creating a new tuition post.'}
+                </div>
+            )}
 
             </FadeIn>
             
@@ -94,7 +112,7 @@ const PostTuition = () => {
 
                         {/* Salary */}
                         <div className="form-control">
-                            <label className="label"><span className="label-text font-medium">Salary (Tk)</span></label>
+                            <label className="label"><span className="label-text font-medium">Salary (৳)</span></label>
                             <input 
                                 {...register("salary", { required: "Salary is required" })} 
                                 type="number" 
@@ -129,12 +147,21 @@ const PostTuition = () => {
 
                     <div className="mt-4 flex justify-end">
                         <div className="w-full md:w-auto">
-                            <Button 
-                                label="Post Tuition" 
-                                type="submit" 
-                                loading={isPending} 
-                                fullWidth 
-                            />
+                            {hasCredits ? (
+                                <Button
+                                    label="Post Tuition"
+                                    type="submit"
+                                    loading={isPending}
+                                    fullWidth
+                                />
+                            ) : (
+                                <Button
+                                    label="Buy Posting Credits"
+                                    type="button"
+                                    onClick={() => navigate('/dashboard/student/posting-credits')}
+                                    fullWidth
+                                />
+                            )}
                         </div>
                     </div>
                 </form>

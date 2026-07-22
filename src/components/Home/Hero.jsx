@@ -3,6 +3,7 @@ import { Link } from "react-router";
 import { motion } from "framer-motion";
 import { FiSearch, FiUserPlus } from "react-icons/fi";
 import Button from "../Shared/Button/Button";
+import heroBanner from "../../assets/Vec_3.png";
 
 const Hero = () => {
   const containerVariants = {
@@ -58,7 +59,7 @@ const Hero = () => {
               className="mt-6 text-lg md:text-xl text-base-content/70"
             >
               Connect with qualified tutors or find tuition jobs in your area. 
-              <br></br>Simple, secure, and designed for your success.
+              <br></br>Simple, secure and designed for your success.
             </motion.p>
 
             {/* buttons */}
@@ -66,10 +67,10 @@ const Hero = () => {
               variants={itemVariants}
               className="mt-8 flex flex-col justify-center items-center gap-4 sm:flex-row lg:justify-start"
             >
-              <Link to="/tuitions">
-                <Button 
-                  label="Find a Tutor" 
-                  icon={FiSearch} 
+              <Link to="/tutors">
+                <Button
+                  label="Find a Tutor"
+                  icon={FiSearch}
                 />
               </Link>
               <Link to="/register">
@@ -92,7 +93,7 @@ const Hero = () => {
           >
             <div className="overflow-hidden rounded-2xl shadow-2xl shadow-primary/20 hidden md:flex">
               <img
-                src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=2070&auto=format&fit=crop"
+                src={heroBanner}
                 alt="Students learning"
                 className="h-full w-full object-cover"
               />

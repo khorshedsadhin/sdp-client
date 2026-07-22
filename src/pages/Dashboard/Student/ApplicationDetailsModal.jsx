@@ -3,6 +3,7 @@ import { FiX, FiCheck, FiXCircle } from "react-icons/fi";
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
+import { formatCurrency } from "../../../utils/currency";
 
 const ApplicationDetailsModal = ({
   isOpen,
@@ -14,6 +15,10 @@ const ApplicationDetailsModal = ({
 
   const { mutateAsync: updateStatus, isPending } = useMutation({
     mutationFn: async (status) => {
+      if (status === "approved") {
+        const { data } = await axiosSecure.patch(`/application/hire/${application._id}`);
+        return data;
+      }
       const { data } = await axiosSecure.patch(
         `/application/status/${application._id}`,
         { status }
@@ -29,7 +34,9 @@ const ApplicationDetailsModal = ({
       refetch();
       closeModal();
     },
-    onError: () => toast.error("Failed to update status"),
+    onError: () => {
+      toast.error("Failed to update status");
+    },
   });
 
   if (!isOpen || !application) return null;
@@ -84,7 +91,7 @@ const ApplicationDetailsModal = ({
                 Expected Salary
               </h4>
               <p className="text-2xl font-bold text-primary">
-                {application.expectedSalary} Tk
+                {formatCurrency(application.expectedSalary)}
               </p>
             </div>
 

@@ -6,6 +6,7 @@ import useAuth from "../../../hooks/useAuth";
 import LoadingSpinner from "../../../components/Shared/LoadingSpinner";
 import FadeIn from "../../../components/Shared/FadeIn";
 import ApplicationDetailsModal from "./ApplicationDetailsModal";
+import { formatCurrency } from "../../../utils/currency";
 
 const AppliedTutors = () => {
 	const { user } = useAuth();
@@ -89,7 +90,7 @@ const AppliedTutors = () => {
 											</div>
 										</td>
 										<td className="font-medium text-primary">{app.subject}</td>
-										<td className="font-bold">{app.expectedSalary} Tk</td>
+										<td className="font-bold">{formatCurrency(app.expectedSalary)}</td>
 										<td>
 											<span
 												className={`badge ${

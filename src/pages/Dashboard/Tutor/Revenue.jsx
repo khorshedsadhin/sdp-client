@@ -1,10 +1,12 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
-import { FiDollarSign, FiTrendingUp, FiCalendar, FiUser } from "react-icons/fi";
+import { FiTrendingUp, FiCalendar, FiUser } from "react-icons/fi";
+import { FaMoneyBillWave } from "react-icons/fa";
 import useAuth from "../../../hooks/useAuth";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import LoadingSpinner from "../../../components/Shared/LoadingSpinner";
 import FadeIn from "../../../components/Shared/FadeIn";
+import { formatCurrency } from "../../../utils/currency";
 
 const Revenue = () => {
 	const { user } = useAuth();
@@ -36,13 +38,13 @@ const Revenue = () => {
 					<div className="stats shadow bg-primary text-primary-content">
 						<div className="stat">
 							<div className="stat-figure text-primary-content">
-								<FiDollarSign size={32} />
+								<FaMoneyBillWave size={32} />
 							</div>
 							<div className="stat-title text-primary-content/80">
 								Total Earnings
 							</div>
 							<div className="stat-value text-4xl">
-								{totalRevenue.toLocaleString()} Tk
+								{formatCurrency(totalRevenue)}
 							</div>
 							<div className="stat-desc text-primary-content/70">
 								Lifetime revenue
@@ -86,7 +88,6 @@ const Revenue = () => {
 									<tr>
 										<td colSpan="5" className="text-center py-10">
 											<div className="flex flex-col items-center justify-center text-gray-500">
-												<span className="text-4xl mb-2">💰</span>
 												<p>No revenue records found yet.</p>
 											</div>
 										</td>
@@ -128,7 +129,7 @@ const Revenue = () => {
 											</td>
 											<td className="text-right">
 												<div className="font-bold text-success text-lg">
-													+{payment.amount} Tk
+													+{formatCurrency(payment.amount)}
 												</div>
 											</td>
 										</tr>

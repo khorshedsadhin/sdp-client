@@ -1,10 +1,11 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
-import { FiDollarSign, FiCalendar, FiHash } from "react-icons/fi";
+import { FiCreditCard, FiCalendar, FiHash } from "react-icons/fi";
 import useAuth from "../../../hooks/useAuth";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import LoadingSpinner from "../../../components/Shared/LoadingSpinner";
 import FadeIn from "../../../components/Shared/FadeIn";
+import { formatCurrency } from "../../../utils/currency";
 
 const Payments = () => {
 	const { user } = useAuth();
@@ -27,8 +28,7 @@ const Payments = () => {
 				<div className="flex items-center justify-between mb-6">
 					<h2 className="text-2xl font-bold text-primary">Payment History</h2>
 					<div className="badge badge-primary badge-outline font-bold p-3">
-						Total Spent: {payments.reduce((acc, curr) => acc + curr.amount, 0)}{" "}
-						Tk
+						Total Spent: {formatCurrency(payments.reduce((acc, curr) => acc + curr.amount, 0))}
 					</div>
 				</div>
 			</FadeIn>
@@ -84,8 +84,8 @@ const Payments = () => {
 										</td>
 										<td className="text-right">
 											<div className="flex items-center justify-end gap-1 font-bold text-success">
-												<FiDollarSign />
-												{payment.amount} Tk
+												<FiCreditCard />
+												{formatCurrency(payment.amount)}
 											</div>
 										</td>
 									</tr>

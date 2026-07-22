@@ -2,6 +2,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { FiUsers, FiAward, FiBookOpen } from "react-icons/fi";
 import FadeIn from "../../components/Shared/FadeIn";
+import aboutUsBanner from "../../assets/about_us.png";
 
 const About = () => {
 	return (
@@ -33,7 +34,7 @@ const About = () => {
 								{/* Image Side */}
 								<div className="h-64 md:h-auto">
 									<img
-										src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2071&auto=format&fit=crop"
+										src={aboutUsBanner}
 										alt="Team working"
 										className="h-full w-full object-cover"
 									/>

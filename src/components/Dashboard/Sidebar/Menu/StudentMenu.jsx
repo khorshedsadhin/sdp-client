@@ -1,5 +1,5 @@
 import React from "react";
-import { FiGrid, FiPlusSquare, FiUsers, FiDollarSign } from "react-icons/fi";
+import { FiGrid, FiPlusSquare, FiUsers, FiCreditCard } from "react-icons/fi";
 import MenuItem from "./MenuItem";
 
 const StudentMenu = () => {
@@ -26,7 +26,7 @@ const StudentMenu = () => {
       <MenuItem
         label="Payments"
         address="/dashboard/student/payments"
-        icon={FiDollarSign}
+        icon={FiCreditCard}
       />
     </>
   );

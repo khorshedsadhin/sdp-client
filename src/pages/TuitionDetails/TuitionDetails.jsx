@@ -6,20 +6,24 @@ import {
 	FiCalendar,
 	FiClock,
 	FiCheckCircle,
-	FiDollarSign,
+	FiTag,
 } from "react-icons/fi";
 import axios from "axios";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import useAuth from "../../hooks/useAuth";
 import useRole from "../../hooks/useRole";
+import useSubscription from "../../hooks/useSubscription";
 import LoadingSpinner from "../../components/Shared/LoadingSpinner";
 import Button from "../../components/Shared/Button/Button";
+import LockedFeatureButton from "../../components/Dashboard/Subscription/LockedFeatureButton";
 import ApplyModal from "../Tutors/ApplyModal";
+import { formatCurrency } from "../../utils/currency";
 
 const TuitionDetails = () => {
 	const { id } = useParams();
 	const { user } = useAuth();
 	const [role] = useRole();
+	const { isActive: hasActiveSubscription } = useSubscription();
 	const axiosSecure = useAxiosSecure();
 	const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -75,7 +79,7 @@ const TuitionDetails = () => {
 									Salary offered
 								</p>
 								<h3 className="text-2xl font-bold text-primary">
-									{tuition.salary} Tk
+									{formatCurrency(tuition.salary)}
 									<span className="text-sm font-normal text-base-content/60">
 										/month
 									</span>
@@ -97,9 +101,9 @@ const TuitionDetails = () => {
 							<p className="font-bold">Daily 1-1.5 Hrs</p>
 						</div>
 						<div className="p-6 text-center md:hidden">
-							<FiDollarSign className="w-6 h-6 mx-auto mb-2 text-primary" />
+							<FiTag className="w-6 h-6 mx-auto mb-2 text-primary" />
 							<p className="text-sm text-base-content/60">Salary</p>
-							<p className="font-bold">{tuition.salary} Tk</p>
+							<p className="font-bold">{formatCurrency(tuition.salary)}</p>
 						</div>
 						<div className="p-6 text-center hidden md:block">
 							<FiCheckCircle className="w-6 h-6 mx-auto mb-2 text-primary" />
@@ -136,12 +140,14 @@ const TuitionDetails = () => {
 								<button className="btn btn-disabled w-full md:w-auto">
 									Already Applied
 								</button>
-							) : (
+							) : hasActiveSubscription ? (
 								<Button
 									label="Apply Now"
 									onClick={() => setIsModalOpen(true)}
 									fullWidth
 								/>
+							) : (
+								<LockedFeatureButton label="Subscribe to Apply" fullWidth />
 							)}
 						</div>
 					) : role === "student" || role === "admin" ? (

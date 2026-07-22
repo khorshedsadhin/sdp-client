@@ -2,10 +2,11 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { Link } from 'react-router';
-import { FiMapPin, FiDollarSign, FiArrowRight } from 'react-icons/fi';
+import { FiMapPin, FiTag, FiArrowRight } from 'react-icons/fi';
 import LoadingSpinner from '../../components/Shared/LoadingSpinner';
 import Button from '../../components/Shared/Button/Button';
 import FadeIn from '../Shared/FadeIn';
+import { formatCurrency } from '../../utils/currency';
 
 const LatestTuitions = () => {
   const { data: latestTuitions = [], isLoading } = useQuery({
@@ -71,8 +72,8 @@ const LatestTuitions = () => {
                   <span className="truncate text-sm">{item.location}</span>
                 </div>
                 <div className="flex items-center gap-3 text-base-content font-semibold">
-                  <FiDollarSign className="text-primary shrink-0" /> 
-                  <span>{item.salary} <span className="text-sm font-normal text-base-content/60">Tk/month</span></span>
+                  <FiTag className="text-primary shrink-0" />
+                  <span>{formatCurrency(item.salary)}<span className="text-sm font-normal text-base-content/60">/month</span></span>
                 </div>
             </div>
 

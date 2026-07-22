@@ -3,12 +3,14 @@ import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { FiX } from "react-icons/fi";
+import { useNavigate } from "react-router";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import useAuth from "../../hooks/useAuth";
 
 const ApplyModal = ({ isOpen, closeModal, tuitionInfo }) => {
 	const { user } = useAuth();
 	const axiosSecure = useAxiosSecure();
+	const navigate = useNavigate();
 
 	const {
 		register,
@@ -54,6 +56,12 @@ const ApplyModal = ({ isOpen, closeModal, tuitionInfo }) => {
 			}
 		},
 		onError: (err) => {
+			if (err.response?.status === 402) {
+				toast.error("An active subscription is required to apply for tuitions.");
+				closeModal();
+				navigate("/dashboard/subscription");
+				return;
+			}
 			toast.error(
 				err.response?.data?.message || "Failed to submit application"
 			);
@@ -158,7 +166,7 @@ const ApplyModal = ({ isOpen, closeModal, tuitionInfo }) => {
 					<div className="form-control">
 						<label className="label">
 							<span className="label-text font-medium">
-								Expected Salary (Tk)
+								Expected Salary (৳)
 							</span>
 						</label>
 						<input

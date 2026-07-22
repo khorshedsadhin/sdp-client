@@ -1,22 +1,18 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Link, Navigate, useLocation, useNavigate } from "react-router";
+import { Link, Navigate, useNavigate } from "react-router";
 import { motion } from "framer-motion";
 import { FiEye, FiEyeOff } from "react-icons/fi";
-import { FaGoogle } from "react-icons/fa";
 import Button from "../../components/Shared/Button/Button";
 import useAuth from "../../hooks/useAuth";
 import LoadingSpinner from "../../components/Shared/LoadingSpinner";
 import toast from "react-hot-toast";
-import { saveOrUpdateUser } from "../../utils";
 
 const Login = () => {
-  const { signIn, signInWithGoogle, loading, user, setLoading } = useAuth();
+  const { signIn, loading, user, setLoading } = useAuth();
 	const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
-  const location = useLocation();
-  const from = location.state || '/';
 
 	const {
   register,
@@ -25,29 +21,13 @@ const Login = () => {
 	} = useForm();
 
   if(loading) return <LoadingSpinner />
-  if(user) return <Navigate to={from} replace={true} />
+  if(user) return <Navigate to="/dashboard" replace={true} />
     
 	const onSubmit = async(data) => {
     try {
       await signIn(data.email, data.password);
       toast.success("Login Successful!");
-      navigate(from, {replace: true});
-    }
-    catch(err) {
-      toast.error(err?.message);
-      setLoading(false);
-    }
-	};
-
-	const handleGoogleLogin = async() => {
-    try {
-      const defaultRole = "student";
-
-      const { user } = await signInWithGoogle();
-      await saveOrUpdateUser({ name: user?.displayName, email: user?.email, image: user?.photoURL, role: defaultRole });
-
-      toast.success("Login Successful!");
-      navigate(from, {replace: true});
+      navigate('/dashboard', {replace: true});
     }
     catch(err) {
       toast.error(err?.message);
@@ -140,15 +120,6 @@ const Login = () => {
 						{/* submit */}
 						<Button label="Login" type="submit" fullWidth />
 					</form>
-
-					<div className="divider text-xs text-base-content/50">OR</div>
-					<Button
-						onClick={handleGoogleLogin}
-						label="Continue with Google"
-						variant="blackOutline"
-						icon={FaGoogle}
-						fullWidth
-					/>
 
 					{/* Footer */}
 					<p className="mt-6 text-center text-sm text-base-content/70">

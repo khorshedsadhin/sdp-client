@@ -34,13 +34,13 @@ const Button = ({
       ? "border-2 border-accent text-accent hover:bg-accent hover:text-black"
       : "bg-accent text-black hover:bg-accent/90 shadow-md shadow-accent/20 border-2 border-transparent",
 
-    blackOutline:
-      "border-2 border-black text-black hover:bg-black hover:text-white",
-
     ghost:
       "bg-base-200 text-primary hover:bg-base-300 border-2 border-transparent",
 
     error: "bg-error text-white hover:bg-error/90 border-2 border-transparent",
+
+    softError:
+      "bg-error/10 text-error hover:bg-error/20 border-2 border-transparent",
   };
 
   return (

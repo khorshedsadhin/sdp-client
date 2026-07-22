@@ -1,10 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "react-router";
 import axios from "axios";
 import { FiMail, FiUserCheck } from "react-icons/fi";
 import LoadingSpinner from "../../components/Shared/LoadingSpinner";
+import useAuth from "../../hooks/useAuth";
+import useRole from "../../hooks/useRole";
+import ContactTutorModal from "./ContactTutorModal";
 
 const Tutors = () => {
+	const navigate = useNavigate();
+	const { user } = useAuth();
+	const [role] = useRole();
+	const [selectedTutor, setSelectedTutor] = useState(null);
+
 	const { data: tutors = [], isLoading } = useQuery({
 		queryKey: ["tutors"],
 		queryFn: async () => {
@@ -14,6 +23,12 @@ const Tutors = () => {
 			return data;
 		},
 	});
+
+	const handleContactClick = (tutor) => {
+		if (!user) return navigate("/login");
+		if (role !== "student") return; // only students can view tutor contact info
+		setSelectedTutor(tutor);
+	};
 
 	if (isLoading) return <LoadingSpinner />;
 
@@ -64,12 +79,12 @@ const Tutors = () => {
 									<div className="divider my-2"></div>
 
 									<div className="w-full">
-										<a
-											href={`#`}
+										<button
+											onClick={() => handleContactClick(tutor)}
 											className="btn btn-outline btn-primary btn-sm w-full gap-2"
 										>
 											<FiMail /> Contact
-										</a>
+										</button>
 									</div>
 								</div>
 							</div>
@@ -77,6 +92,12 @@ const Tutors = () => {
 					</div>
 				)}
 			</div>
+
+			<ContactTutorModal
+				tutorId={selectedTutor?._id}
+				tutorName={selectedTutor?.name}
+				closeModal={() => setSelectedTutor(null)}
+			/>
 		</div>
 	);
 };

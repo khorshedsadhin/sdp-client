@@ -1,9 +1,11 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
-import { FiDollarSign, FiCalendar, FiCreditCard } from "react-icons/fi";
+import { FiCalendar, FiCreditCard } from "react-icons/fi";
+import { FaMoneyBillWave } from "react-icons/fa";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import LoadingSpinner from "../../../components/Shared/LoadingSpinner";
 import FadeIn from "../../../components/Shared/FadeIn";
+import { formatCurrency } from "../../../utils/currency";
 
 const Reports = () => {
 	const axiosSecure = useAxiosSecure();
@@ -46,13 +48,13 @@ const Reports = () => {
 					<div className="stats shadow-lg bg-primary text-primary-content">
 						<div className="stat">
 							<div className="stat-figure text-primary-content/80">
-								<FiDollarSign size={36} />
+								<FaMoneyBillWave size={36} />
 							</div>
 							<div className="stat-title text-primary-content/80 font-medium">
 								Total Platform Earnings
 							</div>
 							<div className="stat-value text-4xl">
-								৳ {stats.totalRevenue?.toLocaleString()}
+								{formatCurrency(stats.totalRevenue)}
 							</div>
 							<div className="stat-desc text-primary-content/70">
 								Lifetime gross revenue
@@ -125,7 +127,7 @@ const Reports = () => {
 											</td>
 											<td className="text-right">
 												<span className="font-bold text-success text-lg">
-													+ {payment.amount} Tk
+													+ {formatCurrency(payment.amount)}
 												</span>
 											</td>
 										</tr>

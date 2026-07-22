@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { FiUser, FiMail, FiCamera, FiSave } from "react-icons/fi";
+import { useQuery } from "@tanstack/react-query";
+import { FiUser, FiMail, FiCamera, FiSave, FiPhone } from "react-icons/fi";
 import toast from "react-hot-toast";
 import useAuth from "../../../hooks/useAuth";
 import { imageUpload } from "../../../utils";
@@ -8,6 +9,7 @@ import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import Button from "../../../components/Shared/Button/Button";
 import FadeIn from "../../../components/Shared/FadeIn";
 import useRole from "../../../hooks/useRole";
+import SecuritySettings from "./SecuritySettings";
 
 const ProfileSettings = () => {
   const [role, isRoleLoading] = useRole();
@@ -15,15 +17,30 @@ const ProfileSettings = () => {
 	const axiosSecure = useAxiosSecure();
 	const [uploading, setUploading] = useState(false);
 
+	const { data: profile } = useQuery({
+		enabled: !!user?.email,
+		queryKey: ["profile", user?.email],
+		queryFn: async () => {
+			const { data } = await axiosSecure.get("/user/me");
+			return data;
+		},
+	});
+
 	const {
 		register,
 		handleSubmit,
+		reset,
 		formState: { errors },
 	} = useForm({
 		defaultValues: {
 			name: user?.displayName || "",
+			phone: "",
 		},
 	});
+
+	useEffect(() => {
+		if (profile) reset({ name: user?.displayName || "", phone: profile.phone || "" });
+	}, [profile, reset, user?.displayName]);
 
 	const onSubmit = async (data) => {
 		setUploading(true);
@@ -38,6 +55,7 @@ const ProfileSettings = () => {
 			const updateData = {
 				name: data.name,
 				photo: photoURL,
+				phone: data.phone,
 			};
 			await axiosSecure.patch(`/users/${user?.email}`, updateData);
 
@@ -131,6 +149,23 @@ const ProfileSettings = () => {
 							<div className="form-control">
 								<label className="label">
 									<span className="label-text font-medium flex items-center gap-2">
+										<FiPhone /> Phone Number
+									</span>
+								</label>
+								<input
+									{...register("phone")}
+									type="tel"
+									placeholder="01XXXXXXXXX"
+									className="input input-bordered w-full rounded-lg focus:border-primary focus:outline-none"
+								/>
+								<span className="text-xs text-base-content/50 mt-1 ml-1">
+									Optional - shown to subscribed students who contact you.
+								</span>
+							</div>
+
+							<div className="form-control">
+								<label className="label">
+									<span className="label-text font-medium flex items-center gap-2">
 										<FiCamera /> Profile Photo
 									</span>
 								</label>
@@ -157,6 +192,8 @@ const ProfileSettings = () => {
 								</div>
 							</div>
 						</form>
+
+						<SecuritySettings />
 					</div>
 				</div>
 			</div>

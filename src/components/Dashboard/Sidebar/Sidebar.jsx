@@ -1,6 +1,7 @@
 import React from "react";
 import { Link, Navigate, replace, useNavigate } from "react-router";
-import { FiLogOut, FiPieChart, FiUser } from "react-icons/fi";
+import { FiLogOut, FiPieChart, FiUser, FiAward } from "react-icons/fi";
+import { FaMoneyBillWave } from "react-icons/fa";
 import Logo from "../../Shared/Logo/Logo";
 import MenuItem from "./Menu/MenuItem";
 import StudentMenu from "./Menu/StudentMenu";
@@ -49,12 +50,28 @@ const Sidebar = ({ isActive, setIsActive }) => {
 
         {/* Bottom Section */}
         <div className="border-t border-base-200 pt-4 mt-4">
-          <MenuItem 
-            label="Profile Settings" 
-            address="/dashboard/profile" 
-            icon={FiUser} 
+          <MenuItem
+            label="Profile Settings"
+            address="/dashboard/profile"
+            icon={FiUser}
           />
-          
+
+          {role === "tutor" && (
+            <MenuItem
+              label="Subscription"
+              address="/dashboard/subscription"
+              icon={FiAward}
+            />
+          )}
+
+          {role === "student" && (
+            <MenuItem
+              label="Posting Credits"
+              address="/dashboard/student/posting-credits"
+              icon={FaMoneyBillWave}
+            />
+          )}
+
           <button
             onClick={handleLogOut}
             className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-error transition-all hover:bg-error/10 hover:text-red-600 mt-2"

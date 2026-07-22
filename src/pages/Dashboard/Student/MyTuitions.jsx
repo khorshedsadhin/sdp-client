@@ -8,6 +8,7 @@ import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import LoadingSpinner from "../../../components/Shared/LoadingSpinner";
 import FadeIn from "../../../components/Shared/FadeIn";
 import UpdateTuitionModal from "../../../components/Dashboard/Student/UpdateTuitionModal";
+import { formatCurrency } from "../../../utils/currency";
 
 const MyTuitions = () => {
 	const { user } = useAuth();
@@ -128,10 +129,7 @@ const MyTuitions = () => {
 											</div>
 										</td>
 										<td className="font-medium">{item.class}</td>
-										<td className="font-bold">
-											{item.salary}{" "}
-											<span className="text-xs font-normal">Tk</span>
-										</td>
+										<td className="font-bold">{formatCurrency(item.salary)}</td>
 										<td>
 											<div
 												className="max-w-[150px] truncate text-sm"

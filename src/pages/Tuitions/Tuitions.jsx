@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router";
-import { FiMapPin, FiDollarSign, FiSearch, FiFilter } from "react-icons/fi";
+import { FiMapPin, FiTag, FiSearch, FiFilter } from "react-icons/fi";
 import LoadingSpinner from "../../components/Shared/LoadingSpinner";
 import Button from "../../components/Shared/Button/Button";
+import { formatCurrency } from "../../utils/currency";
 
 const Tuitions = () => {
 	const [search, setSearch] = useState("");
@@ -44,7 +45,7 @@ const Tuitions = () => {
 	if (isLoading) return <LoadingSpinner />;
 
 	return (
-		<section className="bg-base-100 min-h-screen py-12 px-4 font-manrope">
+		<section className="bg-base-100 min-h-screen py-12 px-4 font-manrope container mx-auto">
 			{/* Header & Search Section */}
 			<div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-10">
 				<div>
@@ -137,7 +138,7 @@ const Tuitions = () => {
 					</button>
 				</div>
 			) : (
-				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 					{filteredTuitions?.map((item) => (
 						<div
 							key={item._id}
@@ -161,11 +162,11 @@ const Tuitions = () => {
 									<span className="truncate text-sm">{item.location}</span>
 								</div>
 								<div className="flex items-center gap-3 text-base-content font-semibold">
-									<FiDollarSign className="text-primary shrink-0" />
+									<FiTag className="text-primary shrink-0" />
 									<span>
-										{item.salary}{" "}
+										{formatCurrency(item.salary)}
 										<span className="text-sm font-normal text-base-content/60">
-											Tk/month
+											/month
 										</span>
 									</span>
 								</div>

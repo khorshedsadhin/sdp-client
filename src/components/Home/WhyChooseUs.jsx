@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router';
-import { FiShield, FiDollarSign, FiCheckCircle, FiUserCheck } from 'react-icons/fi';
+import { FiShield, FiCreditCard, FiCheckCircle, FiUserCheck } from 'react-icons/fi';
 import Button from "../Shared/Button/Button";
 import FadeIn from "../Shared/FadeIn";
 
@@ -13,8 +13,8 @@ const WhyChooseUs = () => {
     },
     { 
       title: "Secure Payment", 
-      desc: "Transactions are safe, transparent, and fully tracked.", 
-      icon: FiDollarSign 
+      desc: "Transactions are safe, transparent, and fully tracked.",
+      icon: FiCreditCard
     },
     { 
       title: "Dedicated Support", 

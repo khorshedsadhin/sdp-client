@@ -23,6 +23,15 @@ import ManageTuitions from "../pages/Dashboard/Admin/ManageTuitions";
 import Reports from "../pages/Dashboard/Admin/Reports";
 import ProfileSettings from "../pages/Dashboard/common/ProfileSettings";
 import TuitionDetails from "../pages/TuitionDetails/TuitionDetails";
+import SubscriptionPage from "../pages/Dashboard/common/Subscription/SubscriptionPage";
+import MockPaymentPage from "../pages/Dashboard/common/Subscription/MockPaymentPage";
+import PaymentSuccessPage from "../pages/Dashboard/common/Subscription/PaymentSuccessPage";
+import ManageSubscriptionPlans from "../pages/Dashboard/Admin/ManageSubscriptionPlans";
+import ManageSubscriptions from "../pages/Dashboard/Admin/ManageSubscriptions";
+import PostingCreditsPage from "../pages/Dashboard/Student/PostingCredits/PostingCreditsPage";
+import MockCreditPaymentPage from "../pages/Dashboard/Student/PostingCredits/MockCreditPaymentPage";
+import CreditPaymentSuccessPage from "../pages/Dashboard/Student/PostingCredits/CreditPaymentSuccessPage";
+import ManagePostingCredits from "../pages/Dashboard/Admin/ManagePostingCredits";
 
 export const router = createBrowserRouter([
   {
@@ -69,6 +78,42 @@ export const router = createBrowserRouter([
       {
         path: 'profile',
         element: <PrivateRoute><ProfileSettings /></PrivateRoute>
+      },
+      {
+        path: 'subscription',
+        element: <PrivateRoute><SubscriptionPage /></PrivateRoute>
+      },
+      {
+        path: 'subscription/payment',
+        element: <PrivateRoute><MockPaymentPage /></PrivateRoute>
+      },
+      {
+        path: 'subscription/success',
+        element: <PrivateRoute><PaymentSuccessPage /></PrivateRoute>
+      },
+      {
+        path: 'admin/subscription-plans',
+        element: <PrivateRoute><ManageSubscriptionPlans /></PrivateRoute>
+      },
+      {
+        path: 'admin/subscriptions',
+        element: <PrivateRoute><ManageSubscriptions /></PrivateRoute>
+      },
+      {
+        path: 'student/posting-credits',
+        element: <PrivateRoute><PostingCreditsPage /></PrivateRoute>
+      },
+      {
+        path: 'student/posting-credits/payment',
+        element: <PrivateRoute><MockCreditPaymentPage /></PrivateRoute>
+      },
+      {
+        path: 'student/posting-credits/success',
+        element: <PrivateRoute><CreditPaymentSuccessPage /></PrivateRoute>
+      },
+      {
+        path: 'admin/posting-credits',
+        element: <PrivateRoute><ManagePostingCredits /></PrivateRoute>
       },
       {
         path: 'student/my-tuitions',
