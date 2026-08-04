@@ -7,6 +7,7 @@ import {
 	FiClock,
 	FiCheckCircle,
 	FiTag,
+	FiUsers,
 } from "react-icons/fi";
 import axios from "axios";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
@@ -18,6 +19,8 @@ import Button from "../../components/Shared/Button/Button";
 import LockedFeatureButton from "../../components/Dashboard/Subscription/LockedFeatureButton";
 import ApplyModal from "../Tutors/ApplyModal";
 import { formatCurrency } from "../../utils/currency";
+import { tutorGenderPreferenceLabel } from "../../utils/gender";
+import { authHeader } from "../../utils";
 
 const TuitionDetails = () => {
 	const { id } = useParams();
@@ -27,15 +30,28 @@ const TuitionDetails = () => {
 	const axiosSecure = useAxiosSecure();
 	const [isModalOpen, setIsModalOpen] = useState(false);
 
-	const { data: tuition, isLoading } = useQuery({
-		queryKey: ["tuition", id],
+	// The token is passed so the backend can reject this post for a tutor whose
+	// gender doesn't match the student's preference - the block is enforced there,
+	// not by hiding UI here. Plain axios (not useAxiosSecure) because that hook's
+	// interceptor would log the tutor out on the rejection.
+	const {
+		data: tuition,
+		isLoading,
+		error,
+	} = useQuery({
+		retry: false,
+		queryKey: ["tuition", id, user?.email ?? "anonymous"],
 		queryFn: async () => {
 			const { data } = await axios.get(
-				`${import.meta.env.VITE_API_URL}/tuition/${id}`
+				`${import.meta.env.VITE_API_URL}/tuition/${id}`,
+				authHeader(user)
 			);
 			return data;
 		},
 	});
+
+	const isGenderRestricted =
+		error?.response?.data?.reason === "gender_mismatch";
 
 	const { data: hasApplied } = useQuery({
 		queryKey: ["application-check", id, user?.email],
@@ -49,6 +65,24 @@ const TuitionDetails = () => {
 	});
 
 	if (isLoading) return <LoadingSpinner />;
+
+	// Covers both a post that no longer exists (stale link, returned as null) and
+	// one the backend refused to serve this tutor on gender grounds.
+	if (!tuition?._id)
+		return (
+			<section className="bg-base-100 min-h-screen py-12 px-4 font-manrope">
+				<div className="max-w-4xl mx-auto text-center py-24 bg-base-200/30 rounded-xl border border-dashed border-base-300">
+					<p className="text-xl text-base-content/60 font-medium">
+						{isGenderRestricted
+							? error.response.data.message
+							: "This tuition post is no longer available."}
+					</p>
+					<Link to="/tuitions" className="btn btn-link text-primary mt-2">
+						Browse available tuitions
+					</Link>
+				</div>
+			</section>
+		);
 
 	return (
 		<section className="bg-base-100 min-h-screen py-12 px-4 font-manrope">
@@ -119,6 +153,13 @@ const TuitionDetails = () => {
 						<h3 className="text-xl font-bold mb-4 border-b pb-2 inline-block border-primary/20">
 							Requirements & Details
 						</h3>
+						<div className="flex items-center gap-2 mb-4 text-sm">
+							<FiUsers className="text-primary" />
+							<span className="text-base-content/60">Preferred Tutor:</span>
+							<span className="font-semibold">
+								{tutorGenderPreferenceLabel(tuition.preferredTutorGender)}
+							</span>
+						</div>
 						<p className="text-base-content/80 leading-relaxed whitespace-pre-line">
 							{tuition.description || "No additional description provided."}
 						</p>

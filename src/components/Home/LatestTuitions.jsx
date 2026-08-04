@@ -2,18 +2,27 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { Link } from 'react-router';
-import { FiMapPin, FiTag, FiArrowRight } from 'react-icons/fi';
+import { FiArrowRight } from 'react-icons/fi';
 import LoadingSpinner from '../../components/Shared/LoadingSpinner';
 import Button from '../../components/Shared/Button/Button';
 import FadeIn from '../Shared/FadeIn';
-import { formatCurrency } from '../../utils/currency';
+import TuitionCard from '../Shared/TuitionCard';
+import useAuth from '../../hooks/useAuth';
+import { authHeader } from '../../utils';
 
 const LatestTuitions = () => {
+  const { user, loading: isAuthLoading } = useAuth();
+
+  // Sending the token lets the backend narrow this section by gender preference
+  // when the visitor is a tutor, so they can't click through to a post they'd be
+  // blocked from. Anonymous visitors still get every approved post.
   const { data: latestTuitions = [], isLoading } = useQuery({
-    queryKey: ["home-tuitions"],
+    enabled: !isAuthLoading,
+    queryKey: ["home-tuitions", user?.email ?? "anonymous"],
     queryFn: async () => {
       const { data } = await axios.get(
-        `${import.meta.env.VITE_API_URL}/home/tuitions`
+        `${import.meta.env.VITE_API_URL}/home/tuitions`,
+        authHeader(user)
       );
       return data;
     },
@@ -47,41 +56,7 @@ const LatestTuitions = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {latestTuitions.map((item) => (
-          <div
-            key={item._id}
-            className="group flex flex-col bg-base-200 hover:shadow-md border rounded-2xl p-6 border-primary/20 transition-all duration-300"
-          >
-            {/* Card Header */}
-            <div className="flex justify-between items-start mb-4">
-                <div className="badge badge-secondary badge-outline font-medium">
-                  {item.class}
-                </div>
-                <span className="text-xs font-semibold text-base-content/50 bg-base-200 px-2 py-1 rounded">
-                    New
-                </span>
-            </div>
-
-            {/* Card Content */}
-            <h3 className="text-xl font-bold text-base-content group-hover:text-primary transition-colors mb-2">
-              {item.subject}
-            </h3>
-            
-            <div className="space-y-3 mb-6 mt-auto">
-                <div className="flex items-center gap-3 text-base-content/70">
-                  <FiMapPin className="text-primary shrink-0" /> 
-                  <span className="truncate text-sm">{item.location}</span>
-                </div>
-                <div className="flex items-center gap-3 text-base-content font-semibold">
-                  <FiTag className="text-primary shrink-0" />
-                  <span>{formatCurrency(item.salary)}<span className="text-sm font-normal text-base-content/60">/month</span></span>
-                </div>
-            </div>
-
-            {/* Card Action */}
-            <Link to={`/tuition/${item._id}`} className="w-full">
-                <Button label="View Details" fullWidth small variant="primary" />
-            </Link>
-          </div>
+          <TuitionCard key={item._id} tuition={item} showNewBadge />
         ))}
       </div>
       </FadeIn>

@@ -8,6 +8,7 @@ import LoadingSpinner from "../../../components/Shared/LoadingSpinner";
 import FadeIn from "../../../components/Shared/FadeIn";
 import Button from "../../../components/Shared/Button/Button";
 import { formatCurrency } from "../../../utils/currency";
+import { TIER_NAMES } from "../../../components/Dashboard/PostingCredits/tierNames";
 
 const ManagePostingCredits = () => {
   const axiosSecure = useAxiosSecure();
@@ -128,6 +129,30 @@ const ManagePostingCredits = () => {
               disabled={!feeInput}
               onClick={() => updateFee(feeInput)}
             />
+          </div>
+        </div>
+
+        <div className="bg-base-100 border border-base-200 rounded-xl p-5 mb-6">
+          <p className="text-xs text-base-content/60 mb-3">Current Credit Packages</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {(feeConfig?.bundleOptions || []).map((quantity) => (
+              <div
+                key={quantity}
+                className="border border-base-200 rounded-lg p-4 flex flex-col gap-1"
+              >
+                {TIER_NAMES[quantity] && (
+                  <p className="text-xs font-semibold uppercase tracking-wide text-base-content/50">
+                    {TIER_NAMES[quantity]}
+                  </p>
+                )}
+                <p className="font-bold">
+                  {quantity} Credit{quantity > 1 ? "s" : ""}
+                </p>
+                <p className="text-sm text-base-content/60">
+                  {formatCurrency((feeConfig?.feePerCredit || 0) * quantity)}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
 

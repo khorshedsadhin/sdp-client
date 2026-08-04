@@ -16,3 +16,13 @@ export const saveOrUpdateUser = async(userData) => {
 
   return data;
 }
+
+// Auth header for the *public* endpoints that filter their results for a
+// signed-in tutor (the tuition listings and tuition details). Those routes use
+// optionalAuth server-side, so the token is a hint rather than a requirement -
+// hence plain axios instead of useAxiosSecure, whose interceptor logs the user
+// out on a 403/404-style rejection.
+export const authHeader = (user) =>
+  user?.accessToken
+    ? { headers: { Authorization: `Bearer ${user.accessToken}` } }
+    : {};

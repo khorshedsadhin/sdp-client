@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
-import { Link } from "react-router";
-import { FiMapPin, FiTag, FiSearch, FiFilter } from "react-icons/fi";
+import { FiSearch, FiFilter } from "react-icons/fi";
 import LoadingSpinner from "../../components/Shared/LoadingSpinner";
-import Button from "../../components/Shared/Button/Button";
-import { formatCurrency } from "../../utils/currency";
+import TuitionCard from "../../components/Shared/TuitionCard";
+import useAuth from "../../hooks/useAuth";
+import useRole from "../../hooks/useRole";
+import useAxiosSecure from "../../hooks/useAxiosSecure";
 
 const Tuitions = () => {
 	const [search, setSearch] = useState("");
@@ -13,13 +14,30 @@ const Tuitions = () => {
 	const [sortOrder, setSortOrder] = useState("");
 	const [classFilter, setClassFilter] = useState("");
 
+	const { user, loading: isAuthLoading } = useAuth();
+	const [role, isRoleLoading] = useRole();
+	const axiosSecure = useAxiosSecure();
+
+	// Tutors read the gender-filtered listing so they only ever see posts they
+	// qualify for; everyone else keeps the public unfiltered listing. The backend
+	// filters either way - this just picks the right endpoint.
+	const isTutor = role === "tutor";
+
 	const { data, isLoading, refetch } = useQuery({
-		queryKey: ["tuitions", page, search],
+		// Wait for auth/role to settle, otherwise a tutor would briefly be served
+		// the unfiltered public list.
+		enabled: !isAuthLoading && !(user?.email && isRoleLoading),
+		queryKey: ["tuitions", page, search, isTutor ? "tutor" : "public"],
 		queryFn: async () => {
+			const params = `page=${page}&limit=9&search=${search}`;
+
+			if (isTutor) {
+				const res = await axiosSecure.get(`/tuitions/available?${params}`);
+				return res.data;
+			}
+
 			const res = await axios.get(
-				`${
-					import.meta.env.VITE_API_URL
-				}/tuitions?page=${page}&limit=9&search=${search}`
+				`${import.meta.env.VITE_API_URL}/tuitions?${params}`
 			);
 			return res.data;
 		},
@@ -42,7 +60,10 @@ const Tuitions = () => {
 		refetch();
 	};
 
-	if (isLoading) return <LoadingSpinner />;
+	// Also spin while the viewer's role is still resolving, since the query is
+	// disabled until then and would otherwise flash an empty grid.
+	const isResolvingViewer = isAuthLoading || (!!user?.email && isRoleLoading);
+	if (isLoading || isResolvingViewer) return <LoadingSpinner />;
 
 	return (
 		<section className="bg-base-100 min-h-screen py-12 px-4 font-manrope container mx-auto">
@@ -140,48 +161,7 @@ const Tuitions = () => {
 			) : (
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 					{filteredTuitions?.map((item) => (
-						<div
-							key={item._id}
-							className="group flex flex-col bg-base-200 hover:shadow-md border rounded-2xl p-6 border-primary/20 transition-all duration-300"
-						>
-							{/* Card Header */}
-							<div className="flex justify-between items-start mb-4">
-								<div className="badge badge-secondary badge-outline font-medium">
-									{item.class}
-								</div>
-							</div>
-
-							{/* Card Content */}
-							<h3 className="text-xl font-bold text-base-content group-hover:text-primary transition-colors mb-2">
-								{item.subject}
-							</h3>
-
-							<div className="space-y-3 mb-6 mt-auto">
-								<div className="flex items-center gap-3 text-base-content/70">
-									<FiMapPin className="text-primary shrink-0" />
-									<span className="truncate text-sm">{item.location}</span>
-								</div>
-								<div className="flex items-center gap-3 text-base-content font-semibold">
-									<FiTag className="text-primary shrink-0" />
-									<span>
-										{formatCurrency(item.salary)}
-										<span className="text-sm font-normal text-base-content/60">
-											/month
-										</span>
-									</span>
-								</div>
-							</div>
-
-							{/* Card Action */}
-							<Link to={`/tuition/${item._id}`} className="w-full">
-								<Button
-									label="View Details"
-									fullWidth
-									small
-									variant="primary"
-								/>
-							</Link>
-						</div>
+						<TuitionCard key={item._id} tuition={item} />
 					))}
 				</div>
 			)}

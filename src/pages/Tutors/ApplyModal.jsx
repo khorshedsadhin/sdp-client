@@ -62,6 +62,13 @@ const ApplyModal = ({ isOpen, closeModal, tuitionInfo }) => {
 				navigate("/dashboard/subscription");
 				return;
 			}
+			// The student asked for a tutor of a different gender. Nothing the tutor
+			// can do about it, so just close with the reason - no redirect.
+			if (err.response?.data?.reason === "gender_mismatch") {
+				toast.error(err.response.data.message);
+				closeModal();
+				return;
+			}
 			toast.error(
 				err.response?.data?.message || "Failed to submit application"
 			);

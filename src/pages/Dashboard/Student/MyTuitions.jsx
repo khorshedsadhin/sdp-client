@@ -9,6 +9,7 @@ import LoadingSpinner from "../../../components/Shared/LoadingSpinner";
 import FadeIn from "../../../components/Shared/FadeIn";
 import UpdateTuitionModal from "../../../components/Dashboard/Student/UpdateTuitionModal";
 import { formatCurrency } from "../../../utils/currency";
+import { tutorGenderPreferenceLabel } from "../../../utils/gender";
 
 const MyTuitions = () => {
 	const { user } = useAuth();
@@ -126,6 +127,10 @@ const MyTuitions = () => {
 											</div>
 											<div className="text-xs text-base-content/50">
 												{item.days} days/week
+											</div>
+											<div className="text-xs text-base-content/50">
+												Preferred Tutor:{" "}
+												{tutorGenderPreferenceLabel(item.preferredTutorGender)}
 											</div>
 										</td>
 										<td className="font-medium">{item.class}</td>

@@ -4,6 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { FiX } from "react-icons/fi";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
+import { TUTOR_GENDER_PREFERENCE_OPTIONS } from "../../../utils/gender";
 
 const UpdateTuitionModal = ({ isOpen, closeModal, tuition, refetch }) => {
 	const axiosSecure = useAxiosSecure();
@@ -24,6 +25,7 @@ const UpdateTuitionModal = ({ isOpen, closeModal, tuition, refetch }) => {
 				days: tuition.days,
 				location: tuition.location,
 				description: tuition.description,
+				preferredTutorGender: tuition.preferredTutorGender || "",
 			});
 		}
 	}, [tuition, reset]);
@@ -143,6 +145,32 @@ const UpdateTuitionModal = ({ isOpen, closeModal, tuition, refetch }) => {
 								<option value="6">6 Days</option>
 							</select>
 						</div>
+					</div>
+
+					<div className="form-control">
+						<label className="label">
+							<span className="label-text font-semibold">
+								Preferred Tutor Gender
+							</span>
+						</label>
+						<select
+							{...register("preferredTutorGender", { required: true })}
+							className="select select-bordered w-full"
+						>
+							<option disabled value="">
+								Select Preference
+							</option>
+							{TUTOR_GENDER_PREFERENCE_OPTIONS.map((option) => (
+								<option key={option.value} value={option.value}>
+									{option.label}
+								</option>
+							))}
+						</select>
+						{errors.preferredTutorGender && (
+							<span className="text-error text-xs mt-1">
+								Preferred tutor gender is required
+							</span>
+						)}
 					</div>
 
 					<div className="form-control">

@@ -2,13 +2,20 @@ import React from "react";
 import { FiCheck } from "react-icons/fi";
 import Button from "../../Shared/Button/Button";
 import { formatCurrency } from "../../../utils/currency";
+import { TIER_NAMES } from "./tierNames";
 
 const CreditBundleCard = ({ quantity, feePerCredit, onSelect }) => {
   const total = feePerCredit * quantity;
+  const tierName = TIER_NAMES[quantity];
 
   return (
     <div className="group bg-base-100 border border-base-200 rounded-2xl p-6 shadow-md flex flex-col transition-all duration-300 hover:border-primary/40 hover:shadow-lg">
       {/* Header */}
+      {tierName && (
+        <p className="text-xs font-semibold uppercase tracking-wide text-base-content/50 mb-1">
+          {tierName}
+        </p>
+      )}
       <h3 className="text-lg font-bold text-primary">
         {quantity} Credit{quantity > 1 ? "s" : ""}
       </h3>

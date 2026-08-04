@@ -7,6 +7,7 @@ import useAxiosSecure from '../../../hooks/useAxiosSecure';
 import useCredits from '../../../hooks/useCredits';
 import Button from '../../../components/Shared/Button/Button';
 import FadeIn from '../../../components/Shared/FadeIn';
+import { TUTOR_GENDER_PREFERENCE_OPTIONS } from '../../../utils/gender';
 
 const PostTuition = () => {
     const { register, handleSubmit, reset, formState: { errors } } = useForm();
@@ -122,6 +123,22 @@ const PostTuition = () => {
                             {errors.salary && <span className="mt-1 text-xs text-error">{errors.salary.message}</span>}
                         </div>
 
+                        {/* Preferred Tutor Gender */}
+                        <div className="form-control md:col-span-2">
+                            <label className="label"><span className="label-text font-medium">Preferred Tutor Gender</span></label>
+                            <select
+                                {...register("preferredTutorGender", { required: "Preferred tutor gender is required" })}
+                                className={`select select-bordered w-full rounded-lg focus:border-primary focus:outline-none ${errors.preferredTutorGender ? "select-error" : ""}`}
+                                defaultValue=""
+                            >
+                                <option disabled value="">Select Preference</option>
+                                {TUTOR_GENDER_PREFERENCE_OPTIONS.map((option) => (
+                                    <option key={option.value} value={option.value}>{option.label}</option>
+                                ))}
+                            </select>
+                            {errors.preferredTutorGender && <span className="mt-1 text-xs text-error">{errors.preferredTutorGender.message}</span>}
+                        </div>
+
                         {/* Location */}
                         <div className="form-control md:col-span-2">
                             <label className="label"><span className="label-text font-medium">Location</span></label>
@@ -140,7 +157,7 @@ const PostTuition = () => {
                             <textarea 
                                 {...register("description")} 
                                 className="textarea textarea-bordered h-24 rounded-lg focus:border-primary focus:outline-none" 
-                                placeholder="Mention preferred medium, gender, or specific requirements..."
+                                placeholder="Mention preferred medium or any specific requirements..."
                             ></textarea>
                         </div>
                     </div>

@@ -6,6 +6,7 @@ import Button from "../../components/Shared/Button/Button";
 import { useForm } from "react-hook-form";
 import useAuth from "../../hooks/useAuth";
 import { imageUpload, saveOrUpdateUser } from "../../utils";
+import { USER_GENDER_OPTIONS } from "../../utils/gender";
 import { toast } from 'react-hot-toast'
 import LoadingSpinner from "../../components/Shared/LoadingSpinner";
 
@@ -26,15 +27,15 @@ const Register = () => {
   if(user) return <Navigate to="/dashboard" replace={true} />
 
 	const onSubmit = async (data) => {
-    const { name, image, email, password } = data;
+    const { name, image, email, password, gender } = data;
     const imageFile = image[0];
 
     try {
       const imageURL = await imageUpload(imageFile);
-      
+
       //1. User Registration
       const result = await createUser(email, password);
-      await saveOrUpdateUser({ name, email, image: imageURL, role });
+      await saveOrUpdateUser({ name, email, image: imageURL, role, gender });
 
       //3. Save username & profile photo
       await updateUserProfile(
@@ -133,6 +134,32 @@ const Register = () => {
 							{errors.email && (
 								<span className="mt-1 text-xs text-error">
 									{errors.email.message}
+								</span>
+							)}
+						</div>
+
+						{/* Gender */}
+						<div className="form-control">
+							<label className="label">
+								<span className="label-text font-medium">Gender</span>
+							</label>
+							<select
+								className="select select-bordered w-full rounded-lg focus:border-primary focus:outline-none"
+								defaultValue=""
+								{...register("gender", { required: "Gender is required" })}
+							>
+								<option disabled value="">
+									Select your gender
+								</option>
+								{USER_GENDER_OPTIONS.map((option) => (
+									<option key={option.value} value={option.value}>
+										{option.label}
+									</option>
+								))}
+							</select>
+							{errors.gender && (
+								<span className="mt-1 text-xs text-error">
+									{errors.gender.message}
 								</span>
 							)}
 						</div>

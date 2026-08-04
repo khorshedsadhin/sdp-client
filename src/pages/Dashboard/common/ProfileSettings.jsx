@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useQuery } from "@tanstack/react-query";
-import { FiUser, FiMail, FiCamera, FiSave, FiPhone } from "react-icons/fi";
+import { FiUser, FiMail, FiCamera, FiSave, FiPhone, FiUsers } from "react-icons/fi";
 import toast from "react-hot-toast";
 import useAuth from "../../../hooks/useAuth";
 import { imageUpload } from "../../../utils";
@@ -52,6 +52,7 @@ const ProfileSettings = () => {
 			}
 			await updateUserProfile(data.name, photoURL);
 
+			// gender is intentionally not sent - it is immutable after registration.
 			const updateData = {
 				name: data.name,
 				photo: photoURL,
@@ -143,6 +144,25 @@ const ProfileSettings = () => {
 								/>
 								<span className="text-xs text-base-content/50 mt-1 ml-1">
 									Email cannot be changed.
+								</span>
+							</div>
+
+							{/* Gender is a permanent account attribute - shown read-only,
+							    the same way the email address is. */}
+							<div className="form-control">
+								<label className="label">
+									<span className="label-text font-medium flex items-center gap-2">
+										<FiUsers /> Gender
+									</span>
+								</label>
+								<input
+									type="text"
+									value={profile?.gender || ""}
+									disabled
+									className="input input-bordered w-full rounded-lg bg-base-200/50 cursor-not-allowed"
+								/>
+								<span className="text-xs text-base-content/50 mt-1 ml-1">
+									Gender is set during registration and cannot be changed.
 								</span>
 							</div>
 
